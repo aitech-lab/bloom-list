@@ -22,7 +22,7 @@ typedef khash_t(key_bloom_hm) bl_t;
 // Енкодинг данных в блум-список
 bl_t* bl_encode(char* filename, float error);
 // Восстанавление ключей
-void bl_decode(bl_t* fl, char* key, char* results);
+void bl_decode(const bl_t* fl, const char* key, char* results);
 // Сохраняем фильтр   
 void bl_save(bl_t* fl, char* output);
 // Загрузка фильтра

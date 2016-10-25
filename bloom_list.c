@@ -108,19 +108,25 @@ bl_encode(char* filename, float error) {
 
 // Восстанавление ключей
 void
-bl_decode(bl_t* fl, char* key, char* results) {
+bl_decode(const bl_t* bl, 
+          const char* key, 
+          char* results) {
     
     uint32_t hashes[MAX_HASHES];
     for(uint32_t i=0; i<MAX_HASHES; ++i) murmur3_hash32(key, strlen(key), i, &hashes[i]);
 
-    for (khiter_t ki=kh_begin(fl); ki!=kh_end(fl); ++ki) {
-        if (kh_exist(fl, ki)) {
-            char *key = (char*) kh_key(fl, ki);
-            bloom_t* f = kh_value(fl, ki);
+    for (khiter_t ki=kh_begin(bl); ki!=kh_end(bl); ++ki) {
+        if (kh_exist(bl, ki)) {
+            char *key = (char*) kh_key(bl, ki);
+            bloom_t* f = kh_value(bl, ki);
             // put filter to results
-            if(bloom_get(f, key, hashes)) printf("%s\n", key);
+            if(bloom_get(f, key, hashes)) {
+                strcat(results, " ");
+                strcat(results, key);
+            }
         }
     }
+    strcat(results, "\0");
 }
 
 // Print statistic
