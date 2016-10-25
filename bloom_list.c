@@ -351,7 +351,7 @@ static void
 bl_parse_line(bl_t* fl, 
               char* line) {
 
-    char* seg =bl_tokenize_line(line);
+    char* seg = bl_tokenize_line(line);
     
     if(seg == NULL) return;
 

@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 
-#include "filter_list.h"
+#include "bloom_list.h"
 
 int usage();
 
@@ -17,10 +17,10 @@ main(int argc, char *argv[]) {
     
     if(argc!=3) return usage();
     
-    fl_t* fl = fl_encode(argv[1], 0.01);
-    fl_print(fl);
-    fl_save(fl, argv[2]);
-    fl_destroy(fl);
+    bl_t* bl = bl_encode(argv[1], 0.01);
+    bl_print(bl);
+    bl_save(bl, argv[2]);
+    bl_destroy(bl);
 
     return 0;
 }
