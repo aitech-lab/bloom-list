@@ -1,5 +1,8 @@
+
+all: test_bloom_list encode
+
 test_bloom_list: test_bloom_list.c bloom_list.c bloom_list.h
-	clang -Wall -g -o test_bloom_list test_bloom_list.c bloom_list.c murmur3.c -lm 
+	clang -Wall -O3 -o test_bloom_list test_bloom_list.c bloom_list.c murmur3.c -lm 
 
 encode: encode.c bloom_list.c bloom_list.h
 	clang -Wall -O3 -o encode encode.c bloom_list.c murmur3.c -lm 

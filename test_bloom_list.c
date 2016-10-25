@@ -7,43 +7,66 @@
 */
 
 #include <stdio.h>
+#include <sys/stat.h>
 
 #include "bloom_list.h"
 #include "colors.h"
 
-#define FILTER_ERROR 0.000001
+
+#define FILTER_ERROR 0.00001
+#define TEST_FILE "data/100k"
+#define BLOOM_FILE "data/100k.bl"
+#define PRINT_KEYS 0
+
 void test(bl_t* bl);
+off_t fsize(const char *filename);
 
 int 
 main(int argc, char *argv[]) {
     
     // encode and save
-    bl_t* bl = bl_encode("data/100k", FILTER_ERROR);
-    bl_save(bl, "data/100k.bl");
-    printf("Saved size %d\n", bl->size);
+    bl_t* bl = bl_encode(TEST_FILE, FILTER_ERROR);
+    bl_save(bl, BLOOM_FILE);
+
+    // calculate compression
+    off_t original_size = fsize(TEST_FILE);
+    off_t bloom_size = fsize(BLOOM_FILE);
+    printf("Compression: "CGRN"%.2f%%"CRST"\n", (1.0-(float)bloom_size/(float)original_size)*100.0);
+    
+    printf("Saved filters: %d\n", bl->size);
     bl_destroy(bl);
 
+
     // load and test
-    bl = bl_load("data/100k.bl");
-    printf("Loaded size %d\n", bl->size);
+    bl = bl_load(BLOOM_FILE);
+    printf("Loaded filters: %d\n", bl->size);
     test(bl);
     bl_destroy(bl);
     
     return 0;
 }
 
+off_t 
+fsize(const char *filename) {
+    struct stat st; 
+    if (stat(filename, &st) == 0)
+        return st.st_size;
+    return -1; 
+}
 
 static char* tokenize_line(char* line);
 
 void
 test(bl_t* bl) {
+
+    printf("Testing:\n");
     
     FILE*  fp;
     char*  line = NULL;
     size_t len = 0;
     size_t read;
 
-    fp = fopen("data/100k", "r");
+    fp = fopen(TEST_FILE, "r");
     char results[8192];
     uint32_t errors = 0;
     uint32_t lines  = 0;
@@ -54,9 +77,9 @@ test(bl_t* bl) {
         char* seg =tokenize_line(line);
         char* key = line;
 
-        printf("%s\n", key);
+        if(PRINT_KEYS) printf("%s\n", key);
 
-        if(seg != NULL) printf("/%s\n", seg); 
+        if(seg != NULL && PRINT_KEYS) printf("/%s\n", seg); 
 
         results[0] = 0;
         bl_decode(bl, key, results);
@@ -64,20 +87,20 @@ test(bl_t* bl) {
         char* t = strtok(results, " ");
         while(t) {
             if(strstr(seg, t) == NULL) {
-                printf("/"CRED"%s"CRST, t);
+                if(PRINT_KEYS) printf("/"CRED"%s"CRST, t);
                 errors++;
             } else {
-                printf("/"CGRN"%s"CRST, t);
+                if(PRINT_KEYS) printf("/"CGRN"%s"CRST, t);
             }
             t = strtok(NULL, " ");
         }
-        printf("\n\n");
+        if(PRINT_KEYS) printf("\n\n");
 
     }
     fclose(fp);
-    printf("LINES: "CGRN"%d"CRST"\n", lines);
-    printf("FILTERS ERROR: %.5f%%\n", FILTER_ERROR*100);
-    printf("ERRORS: "CRED"%d"CRST" (%.2f%%)\n", errors, (float)errors/lines*100);
+    printf("Total lines: "CGRN"%d"CRST"\n", lines);
+    printf("Bloom error: %.5f%%\n", FILTER_ERROR*100);
+    printf("Errors: "CRED"%d"CRST" (%.2f%%)\n", errors, (float)errors/lines*100);
 }
 
 static char*
