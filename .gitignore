@@ -32,3 +32,6 @@
 *.dSYM/
 *.su
 encode
+
+test_bloom_list
+data/*
