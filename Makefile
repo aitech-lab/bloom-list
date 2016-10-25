@@ -1,5 +1,8 @@
-encode: encode.c filter_list.c filter_list.h
-	clang -Wall -O3 -o encode encode.c filter_list.c murmur3.c -lm 
+test_bloom_list: test_bloom_list.c bloom_list.c bloom_list.h
+	clang -Wall -O3 -o test_bloom_list test_bloom_list.c bloom_list.c murmur3.c -lm 
 
-query: query.c filter_list.c filter_list.h
-	clang -Wall -O3 -o query query.c filter_list.c murmur3.c -lm 
+encode: encode.c bloom_list.c bloom_list.h
+	clang -Wall -O3 -o encode encode.c bloom_list.c murmur3.c -lm 
+
+query: query.c bloom_list.c bloom_list.h
+	clang -Wall -O3 -o query query.c bloom_list.c murmur3.c -lm 

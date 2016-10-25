@@ -15,7 +15,7 @@ int usage();
 int 
 main(int argc, char *argv[]) {
     
-    if(argc!=2) return usage();
+    if(argc!=3) return usage();
     
     fl_t* fl = fl_encode(argv[1], 0.01);
     fl_print(fl);
