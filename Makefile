@@ -1,5 +1,5 @@
 
-all: test_bloom_list encode
+all: test_bloom_list encode query
 
 test_bloom_list: test_bloom_list.c bloom_list.c bloom_list.h
 	clang -Wall -O3 -o test_bloom_list test_bloom_list.c bloom_list.c murmur3.c -lm 
